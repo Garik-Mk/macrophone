@@ -1,0 +1,3 @@
+title=<MacroPhone>
+author=<Garik>
+orientation=<portrait>
