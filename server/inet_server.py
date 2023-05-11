@@ -1,9 +1,9 @@
-import netifaces as ni
 import socket
 
 
 def get_ip():
-    return ni.ifaddresses('wlp1s0')[ni.AF_INET][0]['addr']
+    hostname=socket.gethostname()
+    return socket.gethostbyname(hostname)
 
 
 def run_server():
@@ -12,8 +12,10 @@ def run_server():
     #server.bind((get_ip(), 10000))
     # ip = '192.168.44.115'
     ip = get_ip()
+    port = 2234
     print('IP for connection ', ip)
-    server.bind((ip, 10000))
+    server.bind((ip, port))
+    
 
     server.listen()
 
