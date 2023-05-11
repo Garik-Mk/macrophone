@@ -1,6 +1,8 @@
 import socket
 
 
+# Parser needed
+
 class Client():
     def __init__(self) -> None:
         pass

@@ -1,7 +1,12 @@
 """Testing in progress."""
 
-from mainapp import MyApp
+# from mainapp import MyApp
 
 
-if __name__ == '__main__':
-    MyApp().run()
+# def main():
+#     MyApp().run()
+
+
+
+# if __name__ == '__main__':
+#     main()
