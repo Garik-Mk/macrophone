@@ -1,4 +1,5 @@
-"""It's also crossplatform with Windows, OSX, and Ubuntu LTS."""
+"""Key press handler. TODO read configurations from mkb file.
+It's also crossplatform with Windows, OSX, and Ubuntu LTS."""
 import sys
 from pyautogui import hotkey
 
