@@ -9,8 +9,6 @@ def parse_ip_and_port(inputstring: str) -> tuple:
     port = int(port)
     return (ip, port)
 
-
-
 def connect(connect_address: tuple):
     """Main client connection function"""
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

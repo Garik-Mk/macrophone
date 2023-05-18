@@ -1,5 +1,6 @@
 """Server main lib"""
 import socket
+from .key_press import handler
 
 
 def get_ip():
@@ -12,9 +13,9 @@ def run_server():
     """Run actual socket server."""
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    ip = get_ip()
-    server.bind((ip, 0))
-    print(f'IP and port for connection: {ip}:{server.getsockname()[1]}')
+    server_ip = get_ip()
+    server.bind((server_ip, 0))
+    print(f'IP and port for connection: {server_ip}:{server.getsockname()[1]}')
     # quit() # temp, for debug
     server.listen() #TODO make to wait for several seconds
 
@@ -26,6 +27,7 @@ def run_server():
         if len(data) == 0:
             print('Client has been disconnected. Server closed')
             break
+        handler(data.decode('utf-8'))
         print(data.decode('utf-8'))
 
     return user
