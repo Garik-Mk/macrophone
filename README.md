@@ -10,7 +10,7 @@ _Check out https://kivy.org/ for further info._
 
 > ## TODO list:
 > _(List is unordered)_
-> - [ ] Smartphone and pc connection.
+> - [X] Smartphone and pc connection.
 > - [ ] Signal handling on pc.
 > - [ ] More techincal info in README.
 > - [ ] Build for smartphone.
