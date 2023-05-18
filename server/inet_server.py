@@ -1,30 +1,32 @@
+"""Server main lib"""
 import socket
 
 
 def get_ip():
+    """Get current PC ip address"""
     hostname=socket.gethostname()
     return socket.gethostbyname(hostname)
 
 
 def run_server():
+    """Run actual socket server."""
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    #server.bind((get_ip(), 10000))
-    # ip = '192.168.44.115'
     ip = get_ip()
-    port = 2234
-    print('IP for connection ', ip)
-    server.bind((ip, port))
-    
+    server.bind((ip, 0))
+    print(f'IP and port for connection: {ip}:{server.getsockname()[1]}')
+    # quit() # temp, for debug
+    server.listen() #TODO make to wait for several seconds
 
-    server.listen()
+    user, address = server.accept() #TODO make connection handler
+    print(f'Connection successful: {address, user} connected')
 
-    user, address = server.accept()
-    print('Connection successful')
-
-    while True:                     # temp
-        data = user.recv(1024)      #
-        print(data.decode('utf-8')) #
+    while True:
+        data = user.recv(1024)
+        if len(data) == 0:
+            print('Client has been disconnected. Server closed')
+            break
+        print(data.decode('utf-8'))
 
     return user
 
