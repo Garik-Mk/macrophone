@@ -1,25 +1,25 @@
-import argparse
+
 import socket
+import sys
 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(
-        prog='Client',
-        description='Client for macros server',
-    )
-    parser.add_argument('-i', '--ip', type=str, default='127.0.0.1', help='Server public address')
-    parser.add_argument('-p', '--port', type=int, default=2234, help='Server Port')
-    return parser.parse_args()
+def parse_ip_and_port(inputstring: str) -> tuple:
+    """Parse 192.168.1.213:3245 into ('192.168.1.213', 3245)"""
+    ip, port = inputstring.split(':')
+    port = int(port)
+    return (ip, port)
 
 
-def connect(ip, port):
+
+def connect(connect_address: tuple):
+    """Main client connection function"""
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    client.connect((ip, int(port)))
+    client.connect(connect_address)
 
-    print('Connection successful: ip=', ip, ' port=', port)
-    
-    while 1:
+    print('Connection successful')
+
+    while 1:        #temp, will be replaced with pipeline to main file
         text = input()
         if text == "quit":
             break
@@ -27,6 +27,5 @@ def connect(ip, port):
 
 
 if __name__ == '__main__':
-    address = input('MAC: ')
-    port = input('port: ')
-    connect(address, port)
+    address = parse_ip_and_port(sys.argv[1])
+    connect(address)
