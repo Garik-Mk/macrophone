@@ -16,5 +16,5 @@ _Check out https://kivy.org/ for further info._
 > - [ ] Build for smartphone.
 > - [ ] Think out keyboard layout saving configuration file.
 > - [ ] Make software for creating new configurations
-> - [ ] Add ability to create user-defined macroses.
+> - [X] Add ability to create user-defined macroses.
 > - [ ] Add macro keys emulation and videogames support.
