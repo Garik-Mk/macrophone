@@ -7,12 +7,16 @@ from server.mkb_io import read_file, parse_commands
 
 class Kboard(GridLayout):
 
-    def __init__(self, mkb_path, sock, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        #TODO move to some utility function/method
+        connect_ip = '192.168.1.212' # Temp, for testing. Ip and port menu will be added TODO
+        connect_port = int(input())
+        self.sock = connect((connect_ip, connect_port))
+        mkb_path = r'\server\kb_configs\test_keyboard.mkb'
         self.commands = parse_commands(read_file(mkb_path))
         self.buttons_list = []
-        self.sock = sock
 
         for i in range(12):
             text='Placeholder'
@@ -29,10 +33,7 @@ class Kboard(GridLayout):
 class MyApp(App):
 
     def build(self):
-        connect_ip = '192.168.1.212' # Temp, for testing. Ip and port menu will be addede TODO
-        connect_port = int(input())
-        sock = connect((connect_ip, connect_port))
-        return Kboard(mkb_path=r'server\kb_configs\test_keyboard.mkb', sock=sock, cols=4)
+        return Kboard(cols=4)
 
 if __name__ == '__main__':
 
