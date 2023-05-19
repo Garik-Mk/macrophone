@@ -1,8 +1,9 @@
 """Mkb input-output library"""
+import os.path
 
 def read_file(file_path):
     """Read commands from file"""
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(os.path.normpath(file_path), 'r', encoding='utf-8') as file:
         commands = file.readlines()
     return commands
 
