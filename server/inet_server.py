@@ -1,6 +1,7 @@
 """Server main lib"""
 import socket
-from .key_press import handler
+from key_press import handler
+from utils import get_current_dir
 
 
 def get_ip():
@@ -22,13 +23,14 @@ def run_server():
     user, address = server.accept() #TODO make connection handler
     print(f'Connection successful: {address, user} connected')
 
+    ROOT = get_current_dir()
+
     while True:
         data = user.recv(1024)
         if len(data) == 0:
             print('Client has been disconnected. Server closed')
             break
-        handler(data.decode('utf-8'))
-        print(data.decode('utf-8'))
+        handler(data.decode('utf-8'), ROOT + r'\kb_configs\test_keyboard.mkb')
 
     return user
 

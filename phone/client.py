@@ -16,13 +16,16 @@ def connect(connect_address: tuple):
     client.connect(connect_address)
 
     print('Connection successful')
+    return client
+    # while 1:        #temp, will be replaced with pipeline to main file
+    #     text = input()
+    #     if text == "quit":
+    #         break
+    #     client.send(bytes(text, 'UTF-8'))
 
-    while 1:        #temp, will be replaced with pipeline to main file
-        text = input()
-        if text == "quit":
-            break
-        client.send(bytes(text, 'UTF-8'))
-
+def send_command(sock, command):
+    """Send command to pc"""
+    sock.send(bytes(command, 'UTF-8'))
 
 if __name__ == '__main__':
     address = parse_ip_and_port(sys.argv[1])

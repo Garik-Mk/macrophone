@@ -1,17 +1,24 @@
-"""Key press handler. TODO read configurations from mkb file.
+"""Key press handler.
 It's also crossplatform with Windows, OSX, and Ubuntu LTS."""
-import sys
+
 from pyautogui import hotkey
+from mkb_io import read_file, parse_commands
 
-def proceed_command(command_id: int):
-    """Proceed command"""
-    match command_id:
-        case 1:
-            hotkey('ctrl', 'shift', 'esc')
 
-def handler(command):
+def handler(command, commands_file: str):
     """Validate and handle command"""
-    proceed_command(int(command))
+    try:
+        command = int(command)
+    except Exception:
+        print('Error while processing command')
+        return
 
-if __name__ == '__main__':
-    proceed_command(sys.argv[1])
+    commands = read_file(commands_file)
+    commands_list = parse_commands(commands)
+
+    if command > len(commands_list.keys()) or command < 0:
+        print('Command not found')
+        return
+    
+    print(commands_list[str(command)][1])
+    hotkey(*commands_list[str(command)][0])
