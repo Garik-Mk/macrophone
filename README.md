@@ -11,10 +11,10 @@ _Check out https://kivy.org/ for further info._
 > ## TODO list:
 > _(List is unordered)_
 > - [X] Smartphone and pc connection.
-> - [ ] Signal handling on pc.
+> - [X] Signal handling on pc.
 > - [ ] More techincal info in README.
 > - [ ] Build for smartphone.
-> - [ ] Think out keyboard layout saving configuration file.
+> - [X] Think out keyboard layout saving configuration file.
 > - [ ] Make software for creating new configurations
 > - [X] Add ability to create user-defined macroses.
 > - [ ] Add macro keys emulation and videogames support.
