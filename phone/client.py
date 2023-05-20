@@ -25,7 +25,8 @@ def connect(connect_address: tuple):
 
 def send_command(sock, command):
     """Send command to pc"""
-    sock.send(bytes(command, 'UTF-8'))
+    print("Sending command.. ", command)
+    sock.send(bytes(str(command), 'UTF-8'))
 
 if __name__ == '__main__':
     address = parse_ip_and_port(sys.argv[1])

@@ -2,7 +2,6 @@
 from server.inet_server import run_server, get_ip
 
 def main():
-    print(get_ip())
     run_server()
 
 if __name__ == '__main__':

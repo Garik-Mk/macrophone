@@ -21,9 +21,9 @@ class Kboard(GridLayout):
                 text = self.commands[str(i)][1]
             self.buttons_list.append(Button(text=text))
             self.add_widget(self.buttons_list[i])
-            self.buttons_list[i].bind(partial(self.button_press_event, i))
+            self.buttons_list[i].bind(on_press=partial(self.button_press_event, i))
 
-    def button_press_event(self, command_id):
+    def button_press_event(self, command_id, _):
         send_command(self.sock, command_id)
 
 class MyApp(App):

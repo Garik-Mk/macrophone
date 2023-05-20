@@ -7,8 +7,12 @@ except ModuleNotFoundError:
 
 def read_file(file_path):
     """Read commands from file"""
-    with open(get_current_dir() + os.path.normpath(file_path), 'r', encoding='utf-8') as file:
-        commands = file.readlines()
+    try:
+        with open(get_current_dir() + os.path.normpath(file_path), 'r', encoding='utf-8') as file:
+            commands = file.readlines()
+    except OSError:
+        with open(os.path.normpath(file_path), 'r', encoding='utf-8') as file:
+            commands = file.readlines()
     return commands
 
 def parse_commands(commands):
