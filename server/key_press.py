@@ -2,7 +2,10 @@
 It's also crossplatform with Windows, OSX, and Ubuntu LTS."""
 
 from pyautogui import hotkey
-from mkb_io import read_file, parse_commands
+try:
+    from mkb_io import read_file, parse_commands
+except ModuleNotFoundError:
+    from server.mkb_io import read_file, parse_commands
 
 
 def handler(command, commands_file: str):

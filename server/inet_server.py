@@ -1,7 +1,13 @@
 """Server main lib"""
 import socket
-from key_press import handler
-from utils import get_current_dir
+try:
+    from key_press import handler
+    from utils import get_current_dir
+except ModuleNotFoundError:
+    from server.key_press import handler
+    from server.utils import get_current_dir
+    
+
 
 
 def get_ip():
