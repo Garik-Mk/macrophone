@@ -32,7 +32,7 @@ class MyApp(App):
         self.sock = sock
 
     def build(self):
-        return Kboard(mkb_path = r'\server\kb_configs\test_keyboard.mkb', sock=self.sock, cols=4)
+        return Kboard(mkb_path = '/server/kb_configs/test_keyboard.mkb', sock=self.sock, cols=4)
 
 if __name__ == '__main__':
     connect_ip = '192.168.1.212' # Temp, for testing. Ip and port menu will be added TODO

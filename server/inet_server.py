@@ -30,7 +30,7 @@ def run_server():
         if len(data) == 0:
             print('Client has been disconnected. Server closed')
             break
-        handler(data.decode('utf-8'), ROOT + r'\kb_configs\test_keyboard.mkb')
+        handler(data.decode('utf-8'), ROOT + '/kb_configs/test_keyboard.mkb')
 
     return user
 
