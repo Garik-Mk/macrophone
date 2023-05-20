@@ -1,6 +1,9 @@
 """Mkb input-output library"""
 import os.path
-from utils import get_current_dir
+try:
+    from utils import get_current_dir
+except ModuleNotFoundError:
+    from server.utils import get_current_dir
 
 def read_file(file_path):
     """Read commands from file"""
