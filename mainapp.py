@@ -27,13 +27,16 @@ class Kboard(GridLayout):
         send_command(self.sock, command_id)
 
 class MyApp(App):
+    def __init__(self, sock, **kwargs):
+        super().__init__(**kwargs)
+        self.sock = sock
 
     def build(self):
-        connect_ip = '192.168.1.212' # Temp, for testing. Ip and port menu will be added TODO
-        connect_port = int(input())
-        con_sock = connect((connect_ip, connect_port))
-        return Kboard(mkb_path = r'\server\kb_configs\test_keyboard.mkb', sock=con_sock, cols=4)
+        return Kboard(mkb_path = r'\server\kb_configs\test_keyboard.mkb', sock=self.sock, cols=4)
 
 if __name__ == '__main__':
-    app = MyApp()
+    connect_ip = '192.168.1.212' # Temp, for testing. Ip and port menu will be added TODO
+    connect_port = int(input())
+    con_sock = connect((connect_ip, connect_port))
+    app = MyApp(sock=con_sock)
     app.run()
