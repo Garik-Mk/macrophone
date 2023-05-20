@@ -2,3 +2,11 @@
 1:ctrl+b:Brush
 2:ctrl+c:Copy
 3:ctrl+v:Paste
+4:win+shift+s:Screenshot
+5:alt+tab:Quick Switch
+6:win+l:Lock PC
+7:volumemute:Mute
+8:win+e:File Explorer
+9:win+i:Open Settings
+10:ctrl+z:Undo
+11:crtl+y:redo

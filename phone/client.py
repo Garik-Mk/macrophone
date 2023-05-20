@@ -17,11 +17,7 @@ def connect(connect_address: tuple):
 
     print('Connection successful')
     return client
-    # while 1:        #temp, will be replaced with pipeline to main file
-    #     text = input()
-    #     if text == "quit":
-    #         break
-    #     client.send(bytes(text, 'UTF-8'))
+
 
 def send_command(sock, command):
     """Send command to pc"""
