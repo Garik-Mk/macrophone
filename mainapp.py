@@ -35,4 +35,5 @@ class MyApp(App):
         return Kboard(mkb_path = r'\server\kb_configs\test_keyboard.mkb', sock=con_sock, cols=4)
 
 if __name__ == '__main__':
-    MyApp.run()
+    app = MyApp()
+    app.run()
