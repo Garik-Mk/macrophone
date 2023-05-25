@@ -1,0 +1,24 @@
+<first_test_layout>
+ctrl+shift+esc:Task Manager:34,186,74:255,255,255
+ctrl+b:Brush:34,186,74:255,255,255
+ctrl+c:Copy:34,186,74:255,255,255
+ctrl+v:Paste:34,186,74:255,255,255
+win+shift+s:Screenshot:34,186,74:255,255,255
+alt+tab:Quick Switch:34,186,74:255,255,255
+alt+f4:AltF4:34,186,74:255,255,255
+volumemute:Mute:34,186,74:255,255,255
+win+e:File Explorer:34,186,74:255,255,255
+win+i:Open Settings:34,186,74:255,255,255
+ctrl+z:Undo:34,186,74:255,255,255
+<second_test_layout>
+ctrl+z:Undo:34,5,74:255,255,5
+ctrl+c:Copy:34,5,74:255,255,5
+ctrl+b:Brush:34,5,74:255,255,5
+ctrl+shift+esc:Task Manager:34,5,74:255,255,5
+win+shift+s:Screenshot:34,5,74:255,255,5
+win+e:File Explorer:34,5,74:255,255,5
+alt+tab:Quick Switch:34,5,74:255,255,5
+volumemute:Mute:34,5,74:255,255,5
+win+i:Open Settings:34,5,74:255,255,5
+ctrl+v:Paste:34,5,74:255,255,5
+alt+f4:AltF4:34,5,74:255,255,5
