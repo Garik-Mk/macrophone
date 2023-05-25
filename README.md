@@ -15,6 +15,9 @@ _Check out https://kivy.org/ for further info._
 > - [ ] More techincal info in README.
 > - [ ] Build for smartphone.
 > - [X] Think out keyboard layout saving configuration file.
-> - [ ] Make software for creating new configurations
+> - [X] Update keyboard layout saving configuration file.
+> - [ ] Update keyboard layout saving configuration file processing.
+> - [ ] Make settings screen.
+> - [X] Make connection screen.
 > - [X] Add ability to create user-defined macroses.
 > - [ ] Add macro keys emulation and videogames support.
