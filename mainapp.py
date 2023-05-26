@@ -1,9 +1,11 @@
 from functools import partial
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.textinput import TextInput
+from kivy.uix.colorpicker import ColorPicker
 from phone.client import connect, send_command
 from server.mkb_io import read_file, parse_commands
 
@@ -11,7 +13,7 @@ from server.mkb_io import read_file, parse_commands
 class Kboard(GridLayout, Screen):
     sock = None
     def __init__(self, mkb_path, **kwargs):
-        super().__init__(**kwargs)
+        GridLayout.__init__(self, **kwargs)
         Screen.__init__(self, name='Kboard')
 
         self.commands = parse_commands(read_file(mkb_path))
@@ -29,11 +31,50 @@ class Kboard(GridLayout, Screen):
         send_command(Kboard.sock, command_id)
 
 
-class ConnectScreen(GridLayout, Screen):
-
+class SettingsScreen(GridLayout, Screen):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        Screen.__init__(self, name='Connection_screen')
+        GridLayout.__init__(self, **kwargs)
+        Screen.__init__(self, name='SettingsScreen')
+
+    def create_new_kboard(self):
+        ...
+
+    def load_kboard(self):
+        ...
+
+
+class ButtonAddScreen(GridLayout, Screen):
+    def __init__(self, **kwargs):
+        GridLayout.__init__(self, **kwargs)
+        Screen.__init__(self, name='ButtonAddScreen')
+
+
+class ColorScreen(BoxLayout, Screen):
+    def __init__(self, **kwargs):
+        BoxLayout.__init__(self, **kwargs)
+        Screen.__init__(self, name='ColorScreen')
+        self.clr_picker = ColorPicker()
+        self.clr_picker.bind(color=self.on_color)
+        self.add_widget(self.clr_picker)
+        self.button = Button(text='Select Color')
+        self.add_widget(self.button)
+        self.button.bind(on_press=self.on_button)
+
+    def on_color(self, _, value):
+        print("RGBA = ", str(value))
+        self.button.background_normal = ''
+        self.button.color = [1 - i for i in value[:3]]
+        print([1 - i for i in value])
+        self.button.background_color = value
+
+    def on_button(self, instance):
+        print('Color selected')
+
+
+class ConnectScreen(GridLayout, Screen):
+    def __init__(self, **kwargs):
+        GridLayout.__init__(self, **kwargs)
+        Screen.__init__(self, name='ConnectScreen')
         self.cols = 3
         self.connect_ip = TextInput(multiline=False, hint_text='IP')
         self.add_widget(self.connect_ip)
