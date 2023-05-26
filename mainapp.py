@@ -19,7 +19,7 @@ class Kboard(GridLayout, Screen):
         self.commands = parse_commands(read_file(mkb_path))
         self.buttons_list = []
 
-        for i in range(12):
+        for i in range(12): #TODO
             text='Placeholder'
             if str(i) in self.commands.keys():
                 text = self.commands[str(i)][1]
