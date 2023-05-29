@@ -30,8 +30,8 @@ class Command():
         command = command.split(':')
         self.keys = command[0]
         self.name = command[1]
-        self.background_color = command[2]
-        self.font_color = command[3]
+        self.background_color = [int(i)/255 for i in command[2].split(',')]     #TODO remove /255 and change mkb format from 255,255,255 to 1,1,1
+        self.font_color = [int(i)/255 for i in command[3].split(',')]
 
     def __repr__(self) -> str:
         return f'Name: {self.name}, Keys: {self.keys};'
