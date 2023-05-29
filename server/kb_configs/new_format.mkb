@@ -6,15 +6,12 @@ ctrl+v:Paste:34,186,74,255:255,23,255,255
 win+shift+s:Screenshot:34,186,74,255:255,255,255,255
 alt+tab:Quick Switch:34,186,74,255:255,23,255,255
 alt+f4:AltF4:34,186,74,255:255,255,255,255
-volumemute:Mute:34,186,74,255:255,255,255,255
-win+e:File Explorer:34,186,74,255:255,1,255,255
-win+i:Open Settings:34,186,74,255:3,255,255,255
 <second_test_layout>
 ctrl+z:Undo:34,5,74,255:255,255,5,255
 ctrl+c:Copy:34,5,74,255:255,255,5,255
-ctrl+b:Brush:34,5,74,255:255,6,5,255
+ctrl+b:Brush:4,5,64,255:255,6,5,255
 ctrl+shift+esc:Task Manager:34,5,74,6:6,255,5,255
-win+shift+s:Screenshot:34,5,74,255:255,255,5,255
+win+shift+s:Screenshot:16,5,74,255:255,255,5,255
 win+e:File Explorer:34,5,74,255:255,255,5,255
 alt+tab:Quick Switch:34,5,74,255:255,255,5,255
 volumemute:Mute:34,5,74,255:255,255,5,255

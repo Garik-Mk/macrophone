@@ -1,13 +1,6 @@
 """Server main lib"""
 import socket
-try:
-    from key_press import handler
-    from utils import get_current_dir
-except ModuleNotFoundError:
-    from server.key_press import handler
-    from server.utils import get_current_dir
-
-
+from pyautogui import hotkey
 
 
 def get_ip():
@@ -26,17 +19,15 @@ def run_server():
 
     server.listen() #TODO make to wait for several seconds
 
-    user, address = server.accept() #TODO make connection handler
+    user, address = server.accept() #TODO make connection manager
     print(f'Connection successful: {address, user} connected')
-
-    ROOT = get_current_dir()
 
     while True:
         data = user.recv(1024)
         if len(data) == 0:
             print('Client has been disconnected. Server closed')
             break
-        handler(data.decode('utf-8'), ROOT + '/kb_configs/test_keyboard.mkb')
+        hotkey(*data.decode('utf-8').split('+'))
 
     return user
 
