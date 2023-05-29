@@ -8,7 +8,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.colorpicker import ColorPicker
 from phone.client import connect, send_command
 from server.mkb_io import read_file, parse_commands
+from server.utils import split_list
 
+OBJECTS_PER_SCREEN = 12
 
 class Kboard(GridLayout, Screen):
     sock = None
@@ -19,7 +21,7 @@ class Kboard(GridLayout, Screen):
         self.commands = parse_commands(read_file(mkb_path))
         self.buttons_list = []
 
-        for i in range(12): #TODO
+        for i in range(OBJECTS_PER_SCREEN): #TODO
             text='Placeholder'
             if str(i) in self.commands.keys():
                 text = self.commands[str(i)][1]
@@ -29,6 +31,7 @@ class Kboard(GridLayout, Screen):
 
     def button_press_event(self, command_id, _):
         send_command(Kboard.sock, command_id)
+
 
 
 class SettingsScreen(GridLayout, Screen):
@@ -43,10 +46,12 @@ class SettingsScreen(GridLayout, Screen):
         ...
 
 
+
 class ButtonAddScreen(GridLayout, Screen):
     def __init__(self, **kwargs):
         GridLayout.__init__(self, **kwargs)
         Screen.__init__(self, name='ButtonAddScreen')
+
 
 
 class ColorScreen(BoxLayout, Screen):
@@ -71,6 +76,7 @@ class ColorScreen(BoxLayout, Screen):
         print('Color selected')
 
 
+
 class ConnectScreen(GridLayout, Screen):
     def __init__(self, **kwargs):
         GridLayout.__init__(self, **kwargs)
@@ -90,6 +96,27 @@ class ConnectScreen(GridLayout, Screen):
         except ConnectionRefusedError:
             ...     #TODO
         MainApp.sm.current = 'Kboard'
+
+
+
+class KbSelection(PageLayout):
+    def __init__(self, kb_names_list, **kwargs):
+        super().__init__(**kwargs)
+        splited_lists = split_list(kb_names_list, OBJECTS_PER_SCREEN)
+        for each_list in splited_lists:
+            self.add_widget(KbSelectionPage(kb_name_list=each_list))
+
+class KbSelectionPage(GridLayout):
+    def __init__(self, kb_name_list, **kwargs):
+        super().__init__(cols=4, **kwargs)
+        self.buttons_list = []
+        for name in kb_name_list:
+            self.buttons_list.append(Button(text=str(name)))
+            self.add_widget(self.buttons_list[-1])
+            self.buttons_list[-1].bind(on_press=partial(self.button_press_event, str(name)))
+
+    def button_press_event(self, _, name):
+        print(f'Kb swtiched to {name}')
 
 
 class MainApp(App):
