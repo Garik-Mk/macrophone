@@ -89,7 +89,7 @@ class ButtonAddScreen(Screen):
         self.button_keys = TextInput(multiline=False, hint_text='Hotkey Combination', size_hint=(.3, .5), pos_hint={'x':0, 'y':0})
         self.button_save = Button(text='Save', size_hint=(.3, .3),
                             pos_hint={'x':0.7, 'y':0})
-        self.button_save.bin(on_press=self.save_event)
+        self.button_save.bind(on_press=self.save_event)
 
         self.add_widget(self.button)
         self.add_widget(self.button_keys)
