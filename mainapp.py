@@ -39,11 +39,12 @@ class Kboard(GridLayout, Screen):
             button.bind(on_press=self.button_add_event)
             self.add_widget(button)
 
-        settings_button = Button(text='Settings')
-        kb_selection_button = Button(text='Select KB')
-        self.add_widget(settings_button)
-        self.add_widget(kb_selection_button)
-        kb_selection_button.bind(on_press=self.kb_selection_button_press_event)
+        self.settings_button = Button(text='Settings')
+        self.kb_selection_button = Button(text='Select KB')
+        self.add_widget(self.settings_button)
+        self.add_widget(self.kb_selection_button)
+        self.kb_selection_button.bind(on_press=self.kb_selection_button_press_event)
+        self.settings_button.bind(on_press=self.open_setting_menu)
 
 
     def button_press_event(self, command_id, _):
@@ -56,6 +57,10 @@ class Kboard(GridLayout, Screen):
         Kboard.last_used_kb = self.kb_name
         MainApp.sm.current = 'ButtonAddScreen'
 
+    def open_setting_menu(self, _):
+        Kboard.last_used_kb = self.kb_name
+        MainApp.sm.current = 'SettingsScreen'
+
     def chroma_light_mode(self):
         ... # TODO add light (profiles) transitions
 
@@ -63,11 +68,30 @@ class Kboard(GridLayout, Screen):
 
 class SettingsScreen(GridLayout, Screen):
     def __init__(self, **kwargs):
-        GridLayout.__init__(self, **kwargs)
+        GridLayout.__init__(self, cols=4, **kwargs)
         Screen.__init__(self, name='SettingsScreen')
+        self.new_kb_button = Button(text='Create new kb layout')
+        self.back_button = Button(text='Back')
+        self.quit_button = Button(text='Quit')
 
-    def create_new_kboard(self):
+
+        self.add_widget(self.new_kb_button)
+        self.add_widget(self.back_button)
+        self.add_widget(self.quit_button)
+
+        self.new_kb_button.bind(on_press=self.create_new_kboard)
+        self.back_button.bind(on_press=self.back_to_last_kb)
+        self.quit_button.bind(on_press=self.close_app)
+
+
+    def back_to_last_kb(self, _):
+        MainApp.sm.current = Kboard.last_used_kb
+
+    def create_new_kboard(self, _):
         ...
+
+    def close_app(self, _):
+        quit() # TODO
 
 
 class ButtonAddScreen(Screen):
@@ -124,6 +148,7 @@ class ButtonAddScreen(Screen):
 
     def save_event(self, _):
         MainApp.sm.current = Kboard.last_used_kb
+        print(Kboard.last_used_kb)
         # TODO add save functionality
 
 
@@ -185,13 +210,13 @@ class ConnectScreen(GridLayout, Screen):
         self.add_widget(self.connect_port)
         self.button = Button(text='Connect')
         self.add_widget(self.button)
-        self.button.bind(on_press=self.button_press_event)
+        self.button.bind(on_press=self.connect_button_press_event)
 
-    def button_press_event(self, _):
+    def connect_button_press_event(self, _):
         try:
             MainApp.sock = connect((self.connect_ip.text, int(self.connect_port.text)))
-        except ConnectionRefusedError:
-            ...     #TODO
+        except ValueError:
+            ...     #TODO add button for run app without connection
         MainApp.sm.current = 'KbSelection'
 
 
@@ -215,6 +240,7 @@ class MainApp(App):
         MainApp.sm.add_widget(KbSelection(kb_names_list=kb_names_list_for_selection))
         MainApp.sm.add_widget(ButtonAddScreen())
         MainApp.sm.add_widget(ColorScreen())
+        MainApp.sm.add_widget(SettingsScreen())
 
         return MainApp.sm
 

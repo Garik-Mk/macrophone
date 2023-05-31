@@ -15,15 +15,6 @@ def read_file(file_path):
             commands = file.readlines()
     return commands
 
-def parse_commands(commands):       # TODO. Will be removed soon
-    """From 2:ctrl+b:Brush make {2: ('ctrl+b', 'Brush')}"""
-    result_commands = {}
-    for each_command in commands:
-        command_id, keys, name = each_command.split(':')
-        keys = keys.split('+')
-        result_commands[command_id] = (keys, name)
-    return result_commands
-
 
 class Command():
     def __init__(self, command) -> None:
@@ -31,13 +22,13 @@ class Command():
         self.keys = command[0]
         self.name = command[1]
         self.background_color = [int(i)/255 for i in command[2].split(',')]     #TODO remove /255 and change mkb format from 255,255,255 to 1,1,1
-        self.font_color = [int(i)/255 for i in command[3].split(',')]
+        self.font_color = [int(i)/255 for i in command[3].split(',')]           #TODO add default colors
 
     def __repr__(self) -> str:
         return f'Name: {self.name}, Keys: {self.keys};'
 
 
-def parse_mkb(file_path) -> dict:
+def parse_mkb(file_path) -> dict:           # Maybe will be changed to json format
     """Read all layouts and return dict with all of them"""
     commands_dict = {}
     commands = read_file(file_path)

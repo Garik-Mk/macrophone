@@ -1,5 +1,5 @@
 """Testing in progress."""
-from server.inet_server import run_server, get_ip
+from server.inet_server import run_server
 
 def main():
     run_server()
