@@ -9,35 +9,38 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.textinput import TextInput
 from kivy.uix.colorpicker import ColorPicker
 from phone.client import connect, send_command
-from server.mkb_io import parse_mkb, Command
+from server.kb_io import parse_json_kb, save_kb
 from server.utils import split_list
 
 OBJECTS_PER_SCREEN = 10
+COLS_PER_SCREEN = 4
 
 class Kboard(GridLayout, Screen):
     last_used_kb = ''
-    def __init__(self, name, commands: list[Command], **kwargs):
-        GridLayout.__init__(self, cols=4, **kwargs)
+    def __init__(self, name, layout: dict, **kwargs):
+        GridLayout.__init__(self, cols=COLS_PER_SCREEN, **kwargs)
         Screen.__init__(self, name=name)
         self.kb_name = name
-        self.commands_list = commands
-        if len(self.commands_list) > 10:
-            print(f'KB size incorrect in "{name}"') #TODO, add pagination
-            raise ValueError
+        self.layout = layout
+        self.commands_list = []
         self.buttons_list = []
+        self.reload_layout()
+
+    def reload_layout(self):
+        self.clear_widgets()
+        self.commands_list = self.layout['Buttons']
+        self.buttons_list = []
+        if len(self.commands_list) > OBJECTS_PER_SCREEN:
+            print(f'KB size incorrect in "{self.kb_name}"') #TODO, add pagination
+            raise ValueError
 
         for command in self.commands_list:
-            button = Button(text=command.name)
-            self.buttons_list.append(button)
-            button.color = command.font_color
-            button.background_color = command.background_color
-            button.bind(on_press=partial(self.button_press_event, command.keys))
-            self.add_widget(button)
+            self.add_button(command)
 
-        if len(self.commands_list) < 10:
+        if len(self.commands_list) < OBJECTS_PER_SCREEN:
             button = Button(text='Add new Button')
-            button.bind(on_press=self.button_add_event)
             self.add_widget(button)
+            button.bind(on_press=self.button_add_event)
 
         self.settings_button = Button(text='Settings')
         self.kb_selection_button = Button(text='Select KB')
@@ -46,6 +49,21 @@ class Kboard(GridLayout, Screen):
         self.kb_selection_button.bind(on_press=self.kb_selection_button_press_event)
         self.settings_button.bind(on_press=self.open_setting_menu)
 
+
+    def add_button(self, new_button):
+        button = Button(text=new_button['name'])
+        if new_button['text_color'] == []:
+            button.color = self.layout['def_text_color']
+        else:
+            button.color = new_button['text_color']
+        button.background_normal = ''
+        if new_button['button_color'] == []:
+            button.background_color = self.layout['def_background_color']
+        else:
+            button.background_color = new_button['button_color']
+        self.add_widget(button)
+        button.bind(on_press=partial(self.button_press_event, new_button['hotkeys']))
+        self.buttons_list.append(button)
 
     def button_press_event(self, command_id, _):
         send_command(MainApp.sock, command_id)
@@ -68,20 +86,23 @@ class Kboard(GridLayout, Screen):
 
 class SettingsScreen(GridLayout, Screen):
     def __init__(self, **kwargs):
-        GridLayout.__init__(self, cols=4, **kwargs)
+        GridLayout.__init__(self, cols=COLS_PER_SCREEN, **kwargs)
         Screen.__init__(self, name='SettingsScreen')
         self.new_kb_button = Button(text='Create new kb layout')
         self.back_button = Button(text='Back')
         self.quit_button = Button(text='Quit')
+        self.remove_button = Button(text='Remove Button')
 
 
         self.add_widget(self.new_kb_button)
         self.add_widget(self.back_button)
+        self.add_widget(self.remove_button)
         self.add_widget(self.quit_button)
 
         self.new_kb_button.bind(on_press=self.create_new_kboard)
         self.back_button.bind(on_press=self.back_to_last_kb)
         self.quit_button.bind(on_press=self.close_app)
+        self.remove_button.bind(on_press=self.remove_button_event)
 
 
     def back_to_last_kb(self, _):
@@ -92,6 +113,9 @@ class SettingsScreen(GridLayout, Screen):
 
     def close_app(self, _):
         quit() # TODO
+
+    def remove_button_event(self, _):
+        ...
 
 
 class ButtonAddScreen(Screen):
@@ -111,9 +135,12 @@ class ButtonAddScreen(Screen):
         self.button_name = TextInput(multiline=False, hint_text='Name', size_hint=(.3, .5), pos_hint={'x':0, 'y':0.5})
         self.button_name.bind(text=self.on_text_event)
         self.button_keys = TextInput(multiline=False, hint_text='Hotkey Combination', size_hint=(.3, .5), pos_hint={'x':0, 'y':0})
-        self.button_save = Button(text='Save', size_hint=(.3, .3),
+        self.button_save = Button(text='Save', size_hint=(.15, .3),
                             pos_hint={'x':0.7, 'y':0})
         self.button_save.bind(on_press=self.save_event)
+        self.button_back = Button(text='Back', size_hint=(.15, .3),
+                            pos_hint={'x':0.85, 'y':0})
+        self.button_back.bind(on_press=self.back)
 
         self.add_widget(self.button)
         self.add_widget(self.button_keys)
@@ -121,6 +148,7 @@ class ButtonAddScreen(Screen):
         self.add_widget(self.button_back_color_button)
         self.add_widget(self.button_font_color_button)
         self.add_widget(self.button_save)
+        self.add_widget(self.button_back)
 
     def bg_color_select_event(self, _):
         MainApp.sm.current = 'ColorScreen'
@@ -146,10 +174,23 @@ class ButtonAddScreen(Screen):
     def on_text_event(self, _, value):
         self.button.text = value
 
+    def back(self, _):
+        MainApp.sm.current = Kboard.last_used_kb
+
     def save_event(self, _):
         MainApp.sm.current = Kboard.last_used_kb
-        print(Kboard.last_used_kb)
-        # TODO add save functionality
+        text_color = [] if self.button.color == [1, 1, 1, 1] else self.button.color
+        background_color = [] if self.button.background_color == [1, 1, 1, 1] else self.button.background_color
+        new_button = {
+            'name': self.button.text,
+            'hotkeys': self.button_keys.text,
+            'text_color': text_color,
+            'button_color': background_color
+        }
+        MainApp.kb_dict[Kboard.last_used_kb].layout['Buttons'].append(new_button)
+        MainApp.kb_dict[Kboard.last_used_kb].reload_layout()
+        save_kb("layouts.json", MainApp.kb_json)
+
 
 
 
@@ -178,10 +219,10 @@ class ColorScreen(BoxLayout, Screen):
 
 
 class KbSelection(PageLayout, Screen):
-    def __init__(self, kb_names_list, **kwargs):
+    def __init__(self, **kwargs):
         PageLayout.__init__(self, **kwargs)
         Screen.__init__(self, name='KbSelection')
-        splited_lists = split_list(kb_names_list, OBJECTS_PER_SCREEN)
+        splited_lists = split_list(list(MainApp.kb_dict.keys()), OBJECTS_PER_SCREEN)
         for each_list in splited_lists:
             self.add_widget(self.KbSelectionPage(kb_name_list=each_list))
 
@@ -224,20 +265,17 @@ class MainApp(App):
     sock = None
     sm = ScreenManager()
     kb_dict = {}
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    kb_json = {}
 
     def build(self):
         MainApp.sm.add_widget(ConnectScreen())
 
-        kb_dict_from_mkb = parse_mkb("server/kb_configs/new_format.mkb")
-        kb_names_list_for_selection = []
-        for kb_name, kb_value  in kb_dict_from_mkb.items():
-            kb_names_list_for_selection.append(kb_name)
-            MainApp.kb_dict[kb_name] = Kboard(name=kb_name, commands=kb_value)
+        MainApp.kb_json = parse_json_kb("layouts.json")
+        for kb_name, kb_value in MainApp.kb_json.items():
+            MainApp.kb_dict[kb_name] = Kboard(kb_name, kb_value)
             MainApp.sm.add_widget(MainApp.kb_dict[kb_name])
 
-        MainApp.sm.add_widget(KbSelection(kb_names_list=kb_names_list_for_selection))
+        MainApp.sm.add_widget(KbSelection())
         MainApp.sm.add_widget(ButtonAddScreen())
         MainApp.sm.add_widget(ColorScreen())
         MainApp.sm.add_widget(SettingsScreen())

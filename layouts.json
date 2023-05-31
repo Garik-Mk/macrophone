@@ -1,0 +1,54 @@
+{
+    "Windows_Layout": {
+        "def_background_color": [
+            0.82,
+            0.667,
+            0.267,
+            1
+        ],
+        "def_text_color": [
+            0,
+            0,
+            0,
+            1
+        ],
+        "Buttons": [
+            {
+                "name": "Task Manager",
+                "hotkeys": "ctrl+shift+esc",
+                "text_color": [],
+                "button_color": []
+            }
+        ]
+    },
+    "PhotoshopLayout": {
+        "def_background_color": [
+            0.424,
+            0.82,
+            0.271,
+            1
+        ],
+        "def_text_color": [
+            0,
+            0,
+            0,
+            1
+        ],
+        "Buttons": [
+            {
+                "name": "Brush",
+                "hotkeys": [
+                    "ctrl+b"
+                ],
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Eraser",
+                "hotkeys": "ctrl+e",
+                "text_color": [],
+                "button_color": []
+            }
+        ]
+    }
+}
