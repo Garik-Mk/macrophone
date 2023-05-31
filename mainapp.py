@@ -108,13 +108,13 @@ class SettingsScreen(GridLayout, Screen):
     def back_to_last_kb(self, _):
         MainApp.sm.current = Kboard.last_used_kb
 
-    def create_new_kboard(self, _):
+    def create_new_kboard(self, _): #TODO
         ...
 
     def close_app(self, _):
         quit() # TODO
 
-    def remove_button_event(self, _):
+    def remove_button_event(self, _):   #TODO
         ...
 
 
