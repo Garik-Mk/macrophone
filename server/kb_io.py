@@ -8,11 +8,18 @@ except ModuleNotFoundError:
 
 def parse_json_kb(file_path) -> dict:
     try:
-        with open(get_current_dir() + os.path.normpath(file_path), 'r', encoding='utf-8') as read_file:
-            data = json.load(read_file)
-    except OSError:
-        with open(os.path.normpath(file_path), 'r', encoding='utf-8') as read_file:
-            data = json.load(read_file)
+        try:
+            with open(get_current_dir() + os.path.normpath(file_path), 'r', encoding='utf-8') as read_file:
+                data = json.load(read_file)
+        except OSError:
+            with open(os.path.normpath(file_path), 'r', encoding='utf-8') as read_file:
+                data = json.load(read_file)
+    except ValueError:  # includes simplejson.decoder.JSONDecodeError
+        print('Decoding JSON has failed')
+        return {}
+    except FileNotFoundError:
+        print("File don't exist")
+        return {}
     return data
 
 

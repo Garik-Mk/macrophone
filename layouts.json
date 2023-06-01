@@ -91,15 +91,19 @@
         "Buttons": [
             {
                 "name": "Brush",
-                "hotkeys": [
-                    "ctrl+b"
-                ],
+                "hotkeys": "ctrl+b",
                 "text_color": [],
                 "button_color": []
             },
             {
                 "name": "Eraser",
                 "hotkeys": "ctrl+e",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Test key",
+                "hotkeys": "Some",
                 "text_color": [],
                 "button_color": []
             }

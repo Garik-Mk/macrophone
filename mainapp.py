@@ -1,4 +1,5 @@
 from functools import partial
+import copy
 import asyncio
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
@@ -34,8 +35,9 @@ class Kboard(GridLayout, Screen):
             print(f'KB size incorrect in "{self.kb_name}"') #TODO, add pagination
             raise ValueError
 
-        for command in self.commands_list:
-            self.add_button(command)
+        for new_button in self.commands_list:
+            self.add_button(new_button)
+            self.button_bind(new_button['hotkeys'])
 
         if len(self.commands_list) < OBJECTS_PER_SCREEN:
             button = Button(text='Add new Button')
@@ -51,22 +53,23 @@ class Kboard(GridLayout, Screen):
 
 
     def add_button(self, new_button):
-        button = Button(text=new_button['name'])
-        if new_button['text_color'] == []:
-            button.color = self.layout['def_text_color']
-        else:
-            button.color = new_button['text_color']
-        button.background_normal = ''
-        if new_button['button_color'] == []:
-            button.background_color = self.layout['def_background_color']
-        else:
-            button.background_color = new_button['button_color']
-        self.add_widget(button)
-        button.bind(on_press=partial(self.button_press_event, new_button['hotkeys']))
-        self.buttons_list.append(button)
+        self.button = Button(
+            text=new_button['name'],
+            background_normal = '',
+            color=self.layout['def_text_color'] if not new_button['text_color'] else new_button['text_color'],
+            background_color=self.layout['def_background_color'] if not new_button['button_color'] else new_button['button_color']
+        )
+        self.add_widget(self.button)
+        self.buttons_list.append(self.button)
+        return self.button
 
-    def button_press_event(self, command_id, _):
-        send_command(MainApp.sock, command_id)
+    def button_bind(self, hotkeys):
+        self.button.bind(on_press=partial(self.button_press_event, hotkeys))
+
+    def button_press_event(self, hotkeys, _):
+        print('Command:', hotkeys)
+        if not MainApp.sock is None:
+            send_command(MainApp.sock, hotkeys)
 
     def kb_selection_button_press_event(self, _):
         MainApp.sm.current = 'KbSelection'
@@ -77,51 +80,57 @@ class Kboard(GridLayout, Screen):
 
     def open_setting_menu(self, _):
         Kboard.last_used_kb = self.kb_name
-        MainApp.sm.current = 'SettingsScreen'
+        MainApp.sm.current = 'ButtonSettingsScreen'
 
     def chroma_light_mode(self):
         ... # TODO add light (profiles) transitions
 
 
-
-class SettingsScreen(GridLayout, Screen):
+class ButtonSettingsScreen(GridLayout, Screen):
+    editable_button = Button(text='Dummy')
     def __init__(self, **kwargs):
         GridLayout.__init__(self, cols=COLS_PER_SCREEN, **kwargs)
-        Screen.__init__(self, name='SettingsScreen')
-        self.new_kb_button = Button(text='Create new kb layout')
+        Screen.__init__(self, name='ButtonSettingsScreen')
+
         self.back_button = Button(text='Back')
         self.quit_button = Button(text='Quit')
-        self.remove_button = Button(text='Remove Button')
+        self.edit_button = Button(text='Edit Button')
 
-
-        self.add_widget(self.new_kb_button)
         self.add_widget(self.back_button)
-        self.add_widget(self.remove_button)
+        self.add_widget(self.edit_button)
         self.add_widget(self.quit_button)
 
-        self.new_kb_button.bind(on_press=self.create_new_kboard)
         self.back_button.bind(on_press=self.back_to_last_kb)
         self.quit_button.bind(on_press=self.close_app)
-        self.remove_button.bind(on_press=self.remove_button_event)
-
+        self.edit_button.bind(on_press=self.select_button)
 
     def back_to_last_kb(self, _):
         MainApp.sm.current = Kboard.last_used_kb
 
-    def create_new_kboard(self, _): #TODO
-        ...
-
     def close_app(self, _):
-        quit() # TODO
+        quit()
 
-    def remove_button_event(self, _):   #TODO
-        ...
 
+    def edit_button_event(self, instance):
+        MainApp.kb_dict[Kboard.last_used_kb].buttons_list = self.save_buttons_list
+        MainApp.kb_dict[Kboard.last_used_kb].reload_layout()
+        ButtonSettingsScreen.editable_button = instance
+        MainApp.sm.current = 'ButtonEditScreen'
+        MainApp.editor.run_editor()
+
+    def select_button(self, _):
+        self.save_buttons_list = MainApp.kb_dict[Kboard.last_used_kb].buttons_list.copy()
+        MainApp.kb_dict[Kboard.last_used_kb].clear_widgets()
+        for new_button in MainApp.kb_dict[Kboard.last_used_kb].commands_list:
+            button = MainApp.kb_dict[Kboard.last_used_kb].add_button(new_button)
+            button.bind(on_press=self.edit_button_event)
+        MainApp.sm.current = Kboard.last_used_kb
 
 class ButtonAddScreen(Screen):
-    def __init__(self, **kwargs):
+    def __init__(self, name='ButtonAddScreen', **kwargs):
         # FloatLayout.__init__(self, **kwargs)
-        Screen.__init__(self, name='ButtonAddScreen', **kwargs)
+        Screen.__init__(self, name=name, **kwargs)
+
         self.button = Button(text='Hello world', size_hint=(.3, .3),
                         pos_hint={'center_x':0.5, 'center_y':0.5})
 
@@ -150,20 +159,21 @@ class ButtonAddScreen(Screen):
         self.add_widget(self.button_save)
         self.add_widget(self.button_back)
 
-    def bg_color_select_event(self, _):
+    def bg_color_select_event(self, _, name='ButtonAddScreen'):
         MainApp.sm.current = 'ColorScreen'
-        asyncio.ensure_future(self.wait_for_switchback(True)) 
+        ColorScreen.requester = name
+        asyncio.ensure_future(self.wait_for_switchback(True, name))
 
-    def ft_color_select_event(self, _):
+    def ft_color_select_event(self, _,  name='ButtonAddScreen'):
         MainApp.sm.current = 'ColorScreen'
-        asyncio.ensure_future(self.wait_for_switchback(False)) 
+        ColorScreen.requester = name
+        asyncio.ensure_future(self.wait_for_switchback(False, name))
 
-    async def wait_for_switchback(self, change_bg: bool):
-        print("HEREIAM")
-        while MainApp.sm.current != 'ButtonAddScreen':
+    async def wait_for_switchback(self, change_bg: bool, name='ButtonAddScreen'):
+        while MainApp.sm.current != name:
             await asyncio.sleep(0.1)
         self.update_color(change_bg)
-    
+
     def update_color(self, change_bg):
         if change_bg:
             self.button.background_normal = ''
@@ -189,13 +199,42 @@ class ButtonAddScreen(Screen):
         }
         MainApp.kb_dict[Kboard.last_used_kb].layout['Buttons'].append(new_button)
         MainApp.kb_dict[Kboard.last_used_kb].reload_layout()
+        self.button_name.text = ''
+        self.button_keys.text = ''
+        self.button.text = 'Hello World!'
         save_kb("layouts.json", MainApp.kb_json)
 
+class ButtonEditScreen(ButtonAddScreen):
+    def __init__(self, **kwargs):
+        super().__init__(name='ButtonEditScreen', **kwargs)
+        self.remove_button = Button(text='Remove Button', size_hint=(.3, .2),
+                                            pos_hint={'center_x':0.5, 'center_y':.1})
+        self.button_back_color_button.unbind(on_press=self.bg_color_select_event)
+        self.button_font_color_button.unbind(on_press=self.ft_color_select_event)
+        self.button_back_color_button.bind(on_press=partial(self.bg_color_select_event, name='ButtonEditScreen'))
+        self.button_font_color_button.bind(on_press=partial(self.ft_color_select_event, name='ButtonEditScreen'))
+        self.remove_button.bind(on_press=self.del_button)
+        self.add_widget(self.remove_button)
+    
+    def run_editor(self):
+        editable_button = ButtonSettingsScreen.editable_button
+        self.button.background_normal = ''
+        self.button.text = editable_button.text
+        self.button.background_color = editable_button.background_color
+        self.button.color = editable_button.color
+        self.button_name.text = editable_button.text
+        # self.button_keys = 
+    
+    def save_event(self, _):
+        ...
 
+    def del_button(self, _):
+        ...
 
 
 class ColorScreen(BoxLayout, Screen):
     last_color_selected = [1, 1, 1, 1]
+    requester = ''
     def __init__(self, **kwargs):
         BoxLayout.__init__(self, **kwargs)
         Screen.__init__(self, name='ColorScreen')
@@ -214,26 +253,53 @@ class ColorScreen(BoxLayout, Screen):
     def on_button(self, _):
         print('Color selected')
         ColorScreen.last_color_selected = self.button.background_color
-        MainApp.sm.current = 'ButtonAddScreen'
+        MainApp.sm.current = ColorScreen.requester
 
+
+class LayoutSettings(Screen):
+    def __init__(self, **kwargs):
+        Screen.__init__(self, name='LayoutSettings', **kwargs)
+        self.button_save = Button(text='Save', size_hint=(.15, .3),
+                            pos_hint={'x':0.7, 'y':0})
+        self.button_save.bind(on_press=self.save_event)
+        self.button_back = Button(text='Back', size_hint=(.15, .3),
+                            pos_hint={'x':0.85, 'y':0})
+        self.button_back.bind(on_press=self.back)
+
+        self.add_widget(self.button_save)
+        self.add_widget(self.button_back)
+
+    def back(self, _):
+        MainApp.sm.current = 'KbSelection'
+
+    def save_event(self, _):
+        ...
 
 
 class KbSelection(PageLayout, Screen):
     def __init__(self, **kwargs):
         PageLayout.__init__(self, **kwargs)
         Screen.__init__(self, name='KbSelection')
-        splited_lists = split_list(list(MainApp.kb_dict.keys()), OBJECTS_PER_SCREEN)
+        kb_names_list = list(MainApp.kb_dict.keys())
+        kb_names_list.append('LayoutSettings')
+        splited_lists = split_list(kb_names_list, OBJECTS_PER_SCREEN)
         for each_list in splited_lists:
             self.add_widget(self.KbSelectionPage(kb_name_list=each_list))
 
+
     class KbSelectionPage(GridLayout):
-        def __init__(self, kb_name_list, **kwargs):
-            super().__init__(cols=4, **kwargs)
+        def __init__(self, kb_name_list: list[str], **kwargs):
+            super().__init__(cols=OBJECTS_PER_SCREEN, **kwargs)
             self.buttons_list = []
             for name in kb_name_list:
                 self.buttons_list.append(Button(text=str(name)))
+                if name != 'LayoutSettings':
+                    self.buttons_list[-1].background_normal = ''
+                    self.buttons_list[-1].background_color = MainApp.kb_json[name]['def_background_color']
                 self.add_widget(self.buttons_list[-1])
                 self.buttons_list[-1].bind(on_press=partial(self.button_press_event, str(name)))
+            # self.layout_settings_button = Button(text='Settings')
+            # self.add_widget(self.layout_settings_button)
 
         def button_press_event(self, name, _):
             MainApp.sm.current = name
@@ -264,6 +330,7 @@ class ConnectScreen(GridLayout, Screen):
 class MainApp(App):
     sock = None
     sm = ScreenManager()
+    editor = ButtonEditScreen()
     kb_dict = {}
     kb_json = {}
 
@@ -278,7 +345,9 @@ class MainApp(App):
         MainApp.sm.add_widget(KbSelection())
         MainApp.sm.add_widget(ButtonAddScreen())
         MainApp.sm.add_widget(ColorScreen())
-        MainApp.sm.add_widget(SettingsScreen())
+        MainApp.sm.add_widget(ButtonSettingsScreen())
+        MainApp.sm.add_widget(LayoutSettings())
+        MainApp.sm.add_widget(MainApp.editor)
 
         return MainApp.sm
 

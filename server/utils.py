@@ -3,8 +3,8 @@ import os
 def get_current_dir():
     return os.path.dirname(os.path.abspath(__file__))
 
-def split_list(lst, chunk_size):
-    return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]\
+def split_list(data: list, chunk_size: int):
+    return [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
 
 ACCEPTABLE_KEYS = ('!', '"', '#', '$', '%', '&', "'", '(',          #TODO add info button to display this
 ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7',

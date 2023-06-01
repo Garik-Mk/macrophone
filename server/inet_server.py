@@ -1,7 +1,9 @@
 """Server main lib"""
 import socket
-from pyautogui import hotkey
-
+try:
+    from proceed_command import apply_hotkey
+except ModuleNotFoundError:
+    from server.proceed_command import apply_hotkey
 
 def get_ip():
     """Get current PC ip address"""
@@ -15,21 +17,24 @@ def run_server():
 
     server_ip = get_ip()
     server.bind((server_ip, 0))
-    print(f'IP and port for connection: {server_ip}:{server.getsockname()[1]}')
-
-    server.listen() #TODO make to wait for several seconds
-
-    user, address = server.accept() #TODO make connection manager
-    print(f'Connection successful: {address, user} connected')
-
     while True:
-        data = user.recv(1024)
-        if len(data) == 0:
-            print('Client has been disconnected. Server closed')
-            break
-        hotkey(*data.decode('utf-8').split('+'))
+        print(f'IP and port for connection: {server_ip}:{server.getsockname()[1]}')
 
-    return user
+        server.listen() #TODO make to wait for several seconds
+
+        user, address = server.accept() #TODO make connection manager
+        print(f'Connection successful: {address, user} connected')
+
+        while True:
+            try:
+                data = user.recv(1024)
+            except ConnectionResetError:
+                print('Error while reading from socket. Waiting for connection...')
+                break
+            if len(data) == 0:
+                print('Client has been disconnected. Server waiting for connection...')
+                break
+            apply_hotkey(data)
 
 
 if __name__ == '__main__':
