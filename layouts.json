@@ -432,5 +432,35 @@
                 ]
             }
         ]
+    },
+    "Presentation": {
+        "cols": "2",
+        "rows": "5",
+        "def_background_color": [
+            1,
+            1,
+            1,
+            1
+        ],
+        "def_text_color": [
+            1,
+            1,
+            1,
+            1
+        ],
+        "Buttons": [
+            {
+                "name": "Previous",
+                "hotkeys": "left",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Next",
+                "hotkeys": "right",
+                "text_color": [],
+                "button_color": []
+            }
+        ]
     }
 }
