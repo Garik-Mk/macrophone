@@ -15,13 +15,13 @@ from server.utils import split_list
 class Kboard(GridLayout, Screen):
     last_used_kb = ''
     def __init__(self, name, layout: dict, **kwargs):
-        GridLayout.__init__(self, cols=layout['cols'], **kwargs)
+        GridLayout.__init__(self, cols=int(layout['cols']), **kwargs)
         Screen.__init__(self, name=name)
         self.kb_name = name
         self.layout = layout
         self.commands_list = []
         self.buttons_list = []
-        self.objects_per_screen = layout['cols'] * layout['rows'] - 2
+        self.objects_per_screen = int(layout['cols']) * int(layout['rows']) - 2
         self.reload_layout()
 
     def reload_layout(self):
@@ -52,12 +52,13 @@ class Kboard(GridLayout, Screen):
     def add_button(self, new_button):
         self.button = Button(
             text=new_button['name'],
-            background_normal = '',
             color=self.layout['def_text_color'] if not\
-                  new_button['text_color'] else new_button['text_color'],
-            background_color=self.layout['def_background_color'] \
-                if not new_button['button_color'] else new_button['button_color']
+                    new_button['text_color'] else new_button['text_color'],
         )
+        if self.layout['def_background_color'] != [1, 1, 1, 1]:
+            self.button.background_normal = ''
+            self.button.background_color=self.layout['def_background_color'] \
+                    if not new_button['button_color'] else new_button['button_color']
         self.add_widget(self.button)
         self.buttons_list.append(self.button)
         return self.button
