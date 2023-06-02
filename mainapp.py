@@ -53,8 +53,10 @@ class Kboard(GridLayout, Screen):
         self.button = Button(
             text=new_button['name'],
             background_normal = '',
-            color=self.layout['def_text_color'] if not new_button['text_color'] else new_button['text_color'],
-            background_color=self.layout['def_background_color'] if not new_button['button_color'] else new_button['button_color']
+            color=self.layout['def_text_color'] if not\
+                  new_button['text_color'] else new_button['text_color'],
+            background_color=self.layout['def_background_color'] \
+                if not new_button['button_color'] else new_button['button_color']
         )
         self.add_widget(self.button)
         self.buttons_list.append(self.button)
@@ -139,9 +141,19 @@ class ButtonAddScreen(Screen):
                                             pos_hint={'x':0.7, 'y':0.4})
         self.button_font_color_button.bind(on_press=self.ft_color_select_event)
 
-        self.button_name = TextInput(multiline=False, hint_text='Name', size_hint=(.3, .5), pos_hint={'x':0, 'y':0.5})
+        self.button_name = TextInput(
+            multiline=False,
+            hint_text='Name',
+            size_hint=(.3, .5),
+            pos_hint={'x':0, 'y':0.5}
+        )
         self.button_name.bind(text=self.on_text_event)
-        self.button_keys = TextInput(multiline=False, hint_text='Hotkey Combination', size_hint=(.3, .5), pos_hint={'x':0, 'y':0})
+        self.button_keys = TextInput(
+            multiline=False,
+            hint_text='Hotkey Combination',
+            size_hint=(.3, .5),
+            pos_hint={'x':0, 'y':0}
+        )
         self.button_save = Button(text='Save', size_hint=(.15, .3),
                             pos_hint={'x':0.7, 'y':0})
         self.button_save.bind(on_press=self.save_event)
@@ -188,7 +200,8 @@ class ButtonAddScreen(Screen):
     def save_event(self, _):
         MainApp.sm.current = Kboard.last_used_kb
         text_color = [] if self.button.color == [1, 1, 1, 1] else self.button.color
-        background_color = [] if self.button.background_color == [1, 1, 1, 1] else self.button.background_color
+        background_color = [] if self.button.background_color\
+              == [1, 1, 1, 1] else self.button.background_color
         new_button = {
             'name': self.button.text,
             'hotkeys': self.button_keys.text,
@@ -210,11 +223,15 @@ class ButtonEditScreen(ButtonAddScreen):
                                             pos_hint={'center_x':0.5, 'center_y':.1})
         self.button_back_color_button.unbind(on_press=self.bg_color_select_event)
         self.button_font_color_button.unbind(on_press=self.ft_color_select_event)
-        self.button_back_color_button.bind(on_press=partial(self.bg_color_select_event, name='ButtonEditScreen'))
-        self.button_font_color_button.bind(on_press=partial(self.ft_color_select_event, name='ButtonEditScreen'))
+        self.button_back_color_button.bind(
+            on_press=partial(self.bg_color_select_event, name='ButtonEditScreen')
+        )
+        self.button_font_color_button.bind(
+            on_press=partial(self.ft_color_select_event, name='ButtonEditScreen')
+        )
         self.remove_button.bind(on_press=self.del_button)
         self.add_widget(self.remove_button)
-    
+
     def run_editor(self):
         editable_button = ButtonSettingsScreen.editable_button
         self.button.background_normal = ''
@@ -222,8 +239,8 @@ class ButtonEditScreen(ButtonAddScreen):
         self.button.background_color = editable_button.background_color
         self.button.color = editable_button.color
         self.button_name.text = editable_button.text
-        # self.button_keys = 
-    
+        # self.button_keys =
+
     def save_event(self, _):
         ...
 
@@ -255,91 +272,215 @@ class ColorScreen(BoxLayout, Screen):
         MainApp.sm.current = ColorScreen.requester
 
 
-class LayoutSettings(Screen):
+class LayoutSettings(GridLayout, Screen):
     def __init__(self, **kwargs):
+        GridLayout.__init__(self, cols=4)
         Screen.__init__(self, name='LayoutSettings', **kwargs)
-        self.button_save = Button(text='Save', size_hint=(.15, .3),
-                            pos_hint={'x':0.7, 'y':0})
-        self.button_save.bind(on_press=self.save_event)
-        self.button_back = Button(text='Back', size_hint=(.15, .3),
-                            pos_hint={'x':0.85, 'y':0})
+        self.button_quit = Button(text='Quit')
+        self.button_quit.bind(on_press=quit)
+        self.button_back = Button(text='Back')
         self.button_back.bind(on_press=self.back)
+        self.button_create_new_layout = Button(text='Create new Layout')
+        self.button_create_new_layout.bind(on_press=self.switch_layout_creator)
 
-        self.add_widget(self.button_save)
+        self.add_widget(self.button_create_new_layout)
         self.add_widget(self.button_back)
+        self.add_widget(self.button_quit)
 
     def back(self, _):
         MainApp.sm.current = KbSelection.last_used_page
 
+    def switch_layout_creator(self, _):
+        MainApp.sm.current = 'NewLayoutCreator'
+
+
+class NewLayoutCreator(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(name='NewLayoutCreator', **kwargs)
+        self.layout_name = TextInput(
+            multiline=False,
+            hint_text='Name',
+            size_hint=(.33333, .5),
+            pos_hint={'x':0, 'y':0.5}
+        )
+        self.cols_count = TextInput(
+            multiline=False,
+            hint_text='Cols, default = 4',
+            size_hint=(.33333, .5),
+            pos_hint={'x':0.33333, 'y':0.5}
+        )
+        self.rows_count = TextInput(
+            multiline=False,
+            hint_text='Rows, default = 3',
+            size_hint=(.33333, .5),
+            pos_hint={'x':0.66666, 'y':0.5}
+        )
+        self.button_save = Button(text='Save', size_hint=(.16666, .5),
+                            pos_hint={'x':0.6666, 'y':0})
+        self.button_back = Button(text='Back', size_hint=(.16666, .5),
+                            pos_hint={'x':0.83333, 'y':0})
+        self.color_select = Button(text='Select Button Color', size_hint=(.33333, .5),
+                            pos_hint={'x':0, 'y':0})
+        self.text_color_select = Button(text='Select Text Color', size_hint=(.33333, .5),
+                            pos_hint={'x':.33333, 'y':0})
+
+        self.button_save.bind(on_press=self.save_event)
+        self.button_back.bind(on_press=self.back)
+        self.color_select.bind(on_press=partial(self.select_color, True))
+        self.text_color_select.bind(on_press=partial(self.select_color, False))
+
+        self.add_widget(self.button_save)
+        self.add_widget(self.button_back)
+        self.add_widget(self.color_select)
+        self.add_widget(self.text_color_select)
+        self.add_widget(self.layout_name)
+        self.add_widget(self.cols_count)
+        self.add_widget(self.rows_count)
+
+    def select_color(self, change_bg, _):
+        MainApp.sm.current = 'ColorScreen'
+        ColorScreen.requester = 'NewLayoutCreator'
+        asyncio.ensure_future(self.wait_for_switchback(change_bg))
+
+    async def wait_for_switchback(self, change_bg):
+        while MainApp.sm.current != 'NewLayoutCreator':
+            await asyncio.sleep(0.1)
+        self.update_color(change_bg)
+
+    def update_color(self, change_bg):
+        if change_bg:
+            self.color_select.background_normal = ''
+            self.color_select.background_color = ColorScreen.last_color_selected
+            self.text_color_select.background_normal = ''
+            self.text_color_select.background_color = ColorScreen.last_color_selected
+        else:
+            self.text_color_select.color = ColorScreen.last_color_selected
+            self.color_select.color = ColorScreen.last_color_selected
+
+
     def save_event(self, _):
-        ...
+        if self.layout_name.text == '':
+            print('No name specified')
+        else:
+            new_layout = {
+                'cols': 4 if not self.cols_count.text else self.cols_count.text,
+                'rows': 3 if not self.cols_count.text else self.cols_count.text,
+                'def_background_color': self.color_select.background_color,
+                'def_text_color': self.text_color_select.color,
+                'Buttons': []
+            }
+            name = self.layout_name.text
+            MainApp.kb_json[name] = new_layout
+            new_kb = Kboard(name, new_layout)
+            MainApp.sm.add_widget(new_kb)
+            MainApp.kb_dict[name] = new_kb
+            last_page = KbSelection.all_pages[-1]
+            if len(last_page.buttons_list) < 4:
+                counter = len(last_page.buttons_list)
+                new_button = Button(text=str(name), size_hint=(.18, 1),\
+                                        pos_hint={'x':0.14+counter%4*0.18, 'y':0})
+                new_button.bind(on_press=self.kb_selection)
+                if self.color_select.background_color != [1, 1, 1, 1]:
+                    new_button.background_normal = ''
+                new_button.background_color = self.color_select.background_color
+                new_button.color = self.text_color_select.color
+                last_page.buttons_list.append(new_button)
+                last_page.add_widget(new_button)
+            else:
+                new_page = KbSelectionPage(len(KbSelection.all_pages), [name])
+                KbSelection.all_pages.append(new_page)
+                KbSelection.max_screen_counter += 1
+                MainApp.sm.add_widget(new_page)
+
+            save_kb("layouts.json", MainApp.kb_json)
+            MainApp.sm.current = KbSelection.last_used_page
+    
+    def kb_selection(self, _):
+        MainApp.sm.current = self.layout_name.text
+
+
+    def back(self, _):
+        MainApp.sm.current = 'LayoutSettings'
+
 
 
 class KbSelection(Screen):
     last_used_page = 'layoutScreen0'
     max_screen_counter = -1
+    all_pages = []
     def __init__(self, **kwargs):
-        Screen.__init__(self, name='KbSelection')
-        kb_names_list = list(MainApp.kb_dict.keys())
-        kb_names_list.append('LayoutSettings')
+        Screen.__init__(self, name='KbSelection', **kwargs)
+        kb_names_list = ['LayoutSettings']
+        kb_names_list += list(MainApp.kb_dict.keys())
         splited_lists = split_list(kb_names_list, 4)
         for i, each_list in enumerate(splited_lists):
-            MainApp.sm.add_widget(self.KbSelectionPage(i, kb_name_list=each_list))
+            page = KbSelectionPage(i, kb_name_list=each_list)
+            KbSelection.all_pages.append(page)
+            MainApp.sm.add_widget(page)
 
 
-    class KbSelectionPage(Screen):
-        def __init__(self, kb_id: int, kb_name_list: list[str], **kwargs):
-            super().__init__(name='layoutScreen'+str(kb_id), **kwargs)
-            KbSelection.max_screen_counter += 1
-            self.buttons_list = []
-            for i, name in enumerate(kb_name_list):
-                self.buttons_list.append(Button(text=str(name), size_hint=(.18, 1), pos_hint={'x':0.14+i%4*0.18, 'y':0}))
-                if name != 'LayoutSettings':
+class KbSelectionPage(Screen):
+    def __init__(self, kb_id: int, kb_name_list: list[str], **kwargs):
+        super().__init__(name='layoutScreen'+str(kb_id), **kwargs)
+        KbSelection.max_screen_counter += 1
+        self.buttons_list = []
+        for i, name in enumerate(kb_name_list):
+            self.buttons_list.append(
+                Button(text=str(name),
+                size_hint=(.18, 1),
+                pos_hint={'x':0.14+i%4*0.18, 'y':0})
+            )
+            if name != 'LayoutSettings':
+                color = MainApp.kb_json[name]['def_background_color']
+                if color != [1, 1, 1, 1]:
                     self.buttons_list[-1].background_normal = ''
-                    self.buttons_list[-1].background_color = MainApp.kb_json[name]['def_background_color']
-                self.buttons_list[-1].bind(on_press=partial(self.button_press_event, str(name)))
-                self.add_widget(self.buttons_list[-1])
+                    self.buttons_list[-1].background_color = color
+            self.buttons_list[-1].bind(on_press=partial(self.button_press_event, str(name)))
+            self.add_widget(self.buttons_list[-1])
 
-            self.perv_button = (Button(text='<', size_hint=(.14, 1), pos_hint={'x':0, 'y':0}))
-            self.next_button = (Button(text='>', size_hint=(.14, 1), pos_hint={'x':0.86, 'y':0}))
-            self.perv_button.bind(on_press=partial(self.switch_next_screen, kb_id-1, transition='right'))
-            self.next_button.bind(on_press=partial(self.switch_next_screen, kb_id+1, transition='left'))
-            self.add_widget(self.perv_button)
-            self.add_widget(self.next_button)
-            # self.layout_settings_button = Button(text='Settings')
-            # self.add_widget(self.layout_settings_button)
+        self.perv_button = (Button(text='<', size_hint=(.14, 1), pos_hint={'x':0, 'y':0}))
+        self.next_button = (Button(text='>', size_hint=(.14, 1), pos_hint={'x':0.86, 'y':0}))
+        self.perv_button.bind(on_press=partial(self.switch_next_screen, kb_id-1, transition='right'))
+        self.next_button.bind(on_press=partial(self.switch_next_screen, kb_id+1, transition='left'))
+        self.add_widget(self.perv_button)
+        self.add_widget(self.next_button)
+        # self.layout_settings_button = Button(text='Settings')
+        # self.add_widget(self.layout_settings_button)
 
-        def switch_next_screen(self, screen_id: int, _, transition: str):
-            MainApp.sm.transition.direction = transition
-            if screen_id > KbSelection.max_screen_counter or screen_id < 0:
-                print('Screen not found')
-            else:
-                KbSelection.last_used_page = 'layoutScreen'+str(screen_id)
-                MainApp.sm.current = 'layoutScreen'+str(screen_id)
+    def switch_next_screen(self, screen_id: int, _, transition: str):
+        MainApp.sm.transition.direction = transition
+        if screen_id > KbSelection.max_screen_counter or screen_id < 0:
+            print('Screen not found')
+        else:
+            KbSelection.last_used_page = 'layoutScreen'+str(screen_id)
+            MainApp.sm.current = 'layoutScreen'+str(screen_id)
 
-        def button_press_event(self, name: str, _):
-            MainApp.sm.current = name
-            print(f'Kb swtiched to {name}')
+    def button_press_event(self, name: str, _):
+        MainApp.sm.current = name
+        print(f'Kb swtiched to {name}')
 
 
-class ConnectScreen(GridLayout, Screen):
+class ConnectScreen(Screen):
     def __init__(self, **kwargs):
-        GridLayout.__init__(self, **kwargs)
-        Screen.__init__(self, name='ConnectScreen')
-        self.cols = 3
-        self.connect_ip = TextInput(multiline=False, hint_text='IP')
-        self.add_widget(self.connect_ip)
-        self.connect_port = TextInput(multiline=False, hint_text='Port')
+        Screen.__init__(self, name='ConnectScreen', **kwargs)
+        self.connect_ip = TextInput(multiline=False, hint_text='IP', size_hint=(.3333, 1), pos_hint={'x':0, 'y':0})
+        self.connect_port = TextInput(multiline=False, hint_text='Port', size_hint=(.3333, 1), pos_hint={'x':0.3333, 'y':0})
+        self.connect_button = Button(text='Connect', size_hint=(.3333, 0.5), pos_hint={'x':0.6666, 'y':0.5})
+        self.run_button = Button(text='Run without connection', size_hint=(.3333, 0.5), pos_hint={'x':0.6666, 'y':0})
+        self.connect_button.bind(on_press=self.connect_button_press_event)
+        self.run_button.bind(on_press=self.run_without_connection)
         self.add_widget(self.connect_port)
-        self.button = Button(text='Connect')
-        self.add_widget(self.button)
-        self.button.bind(on_press=self.connect_button_press_event)
+        self.add_widget(self.connect_ip)
+        self.add_widget(self.connect_button)
+        self.add_widget(self.run_button)
 
     def connect_button_press_event(self, _):
         try:
             MainApp.sock = connect((self.connect_ip.text, int(self.connect_port.text)))
         except ValueError:
-            ...     #TODO add button for run app without connection
+            print('Connection Failed')
+
+    def run_without_connection(self, _):
         MainApp.sm.current = KbSelection.last_used_page
 
 
@@ -363,6 +504,7 @@ class MainApp(App):
         MainApp.sm.add_widget(ColorScreen())
         MainApp.sm.add_widget(ButtonSettingsScreen())
         MainApp.sm.add_widget(LayoutSettings())
+        MainApp.sm.add_widget(NewLayoutCreator())
         MainApp.sm.add_widget(MainApp.editor)
 
         return MainApp.sm
