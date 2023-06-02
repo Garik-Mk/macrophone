@@ -1,5 +1,7 @@
 {
     "Windows_Layout": {
+        "cols": 4,
+        "rows": 3,
         "def_background_color": [
             0.82,
             0.667,
@@ -75,10 +77,59 @@
             }
         ]
     },
-    "PhotoshopLayout": {
+    "TestLayout": {
+        "cols": 4,
+        "rows": 3,
         "def_background_color": [
-            0.424,
-            0.82,
+            0.24,
+            0.2,
+            0.71,
+            1
+        ],
+        "def_text_color": [
+            0,
+            0,
+            0,
+            1
+        ],
+        "Buttons": [
+            {
+                "name": "Brush",
+                "hotkeys": "ctrl+b",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Eraser",
+                "hotkeys": "ctrl+e",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Test key",
+                "hotkeys": "Some",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Test 2",
+                "hotkeys": "ctrl+c",
+                "text_color": [],
+                "button_color": [
+                    1,
+                    0.09999999999999998,
+                    0.09999999999999998,
+                    1
+                ]
+            }
+        ]
+    },
+    "PhotoshopLayout": {
+        "cols": 4,
+        "rows": 3,
+        "def_background_color": [
+            0.84,
+            0.52,
             0.271,
             1
         ],
@@ -106,10 +157,23 @@
                 "hotkeys": "Some",
                 "text_color": [],
                 "button_color": []
+            },
+            {
+                "name": "Test 2",
+                "hotkeys": "ctrl+c",
+                "text_color": [],
+                "button_color": [
+                    1,
+                    0.09999999999999998,
+                    0.09999999999999998,
+                    1
+                ]
             }
         ]
     },
     "ColorfulLayout": {
+        "cols": 4,
+        "rows": 3,
         "def_background_color": [
             0.424,
             0.82,

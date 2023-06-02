@@ -1,10 +1,8 @@
 from functools import partial
-import copy
 import asyncio
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.pagelayout import PageLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.textinput import TextInput
@@ -13,25 +11,24 @@ from phone.client import connect, send_command
 from server.kb_io import parse_json_kb, save_kb
 from server.utils import split_list
 
-OBJECTS_PER_SCREEN = 10
-COLS_PER_SCREEN = 4
 
 class Kboard(GridLayout, Screen):
     last_used_kb = ''
     def __init__(self, name, layout: dict, **kwargs):
-        GridLayout.__init__(self, cols=COLS_PER_SCREEN, **kwargs)
+        GridLayout.__init__(self, cols=layout['cols'], **kwargs)
         Screen.__init__(self, name=name)
         self.kb_name = name
         self.layout = layout
         self.commands_list = []
         self.buttons_list = []
+        self.objects_per_screen = layout['cols'] * layout['rows'] - 2
         self.reload_layout()
 
     def reload_layout(self):
         self.clear_widgets()
         self.commands_list = self.layout['Buttons']
         self.buttons_list = []
-        if len(self.commands_list) > OBJECTS_PER_SCREEN:
+        if len(self.commands_list) > self.objects_per_screen:
             print(f'KB size incorrect in "{self.kb_name}"') #TODO, add pagination
             raise ValueError
 
@@ -39,7 +36,7 @@ class Kboard(GridLayout, Screen):
             self.add_button(new_button)
             self.button_bind(new_button['hotkeys'])
 
-        if len(self.commands_list) < OBJECTS_PER_SCREEN:
+        if len(self.commands_list) < self.objects_per_screen:
             button = Button(text='Add new Button')
             self.add_widget(button)
             button.bind(on_press=self.button_add_event)
@@ -72,7 +69,7 @@ class Kboard(GridLayout, Screen):
             send_command(MainApp.sock, hotkeys)
 
     def kb_selection_button_press_event(self, _):
-        MainApp.sm.current = 'KbSelection'
+        MainApp.sm.current = KbSelection.last_used_page
 
     def button_add_event(self, _):
         Kboard.last_used_kb = self.kb_name
@@ -89,7 +86,7 @@ class Kboard(GridLayout, Screen):
 class ButtonSettingsScreen(GridLayout, Screen):
     editable_button = Button(text='Dummy')
     def __init__(self, **kwargs):
-        GridLayout.__init__(self, cols=COLS_PER_SCREEN, **kwargs)
+        GridLayout.__init__(self, cols=4, **kwargs)
         Screen.__init__(self, name='ButtonSettingsScreen')
 
         self.back_button = Button(text='Back')
@@ -125,6 +122,7 @@ class ButtonSettingsScreen(GridLayout, Screen):
             button = MainApp.kb_dict[Kboard.last_used_kb].add_button(new_button)
             button.bind(on_press=self.edit_button_event)
         MainApp.sm.current = Kboard.last_used_kb
+
 
 class ButtonAddScreen(Screen):
     def __init__(self, name='ButtonAddScreen', **kwargs):
@@ -204,6 +202,7 @@ class ButtonAddScreen(Screen):
         self.button.text = 'Hello World!'
         save_kb("layouts.json", MainApp.kb_json)
 
+
 class ButtonEditScreen(ButtonAddScreen):
     def __init__(self, **kwargs):
         super().__init__(name='ButtonEditScreen', **kwargs)
@@ -270,38 +269,55 @@ class LayoutSettings(Screen):
         self.add_widget(self.button_back)
 
     def back(self, _):
-        MainApp.sm.current = 'KbSelection'
+        MainApp.sm.current = KbSelection.last_used_page
 
     def save_event(self, _):
         ...
 
 
-class KbSelection(PageLayout, Screen):
+class KbSelection(Screen):
+    last_used_page = 'layoutScreen0'
+    max_screen_counter = -1
     def __init__(self, **kwargs):
-        PageLayout.__init__(self, **kwargs)
         Screen.__init__(self, name='KbSelection')
         kb_names_list = list(MainApp.kb_dict.keys())
         kb_names_list.append('LayoutSettings')
-        splited_lists = split_list(kb_names_list, OBJECTS_PER_SCREEN)
-        for each_list in splited_lists:
-            self.add_widget(self.KbSelectionPage(kb_name_list=each_list))
+        splited_lists = split_list(kb_names_list, 4)
+        for i, each_list in enumerate(splited_lists):
+            MainApp.sm.add_widget(self.KbSelectionPage(i, kb_name_list=each_list))
 
 
-    class KbSelectionPage(GridLayout):
-        def __init__(self, kb_name_list: list[str], **kwargs):
-            super().__init__(cols=OBJECTS_PER_SCREEN, **kwargs)
+    class KbSelectionPage(Screen):
+        def __init__(self, kb_id: int, kb_name_list: list[str], **kwargs):
+            super().__init__(name='layoutScreen'+str(kb_id), **kwargs)
+            KbSelection.max_screen_counter += 1
             self.buttons_list = []
-            for name in kb_name_list:
-                self.buttons_list.append(Button(text=str(name)))
+            for i, name in enumerate(kb_name_list):
+                self.buttons_list.append(Button(text=str(name), size_hint=(.18, 1), pos_hint={'x':0.14+i%4*0.18, 'y':0}))
                 if name != 'LayoutSettings':
                     self.buttons_list[-1].background_normal = ''
                     self.buttons_list[-1].background_color = MainApp.kb_json[name]['def_background_color']
-                self.add_widget(self.buttons_list[-1])
                 self.buttons_list[-1].bind(on_press=partial(self.button_press_event, str(name)))
+                self.add_widget(self.buttons_list[-1])
+
+            self.perv_button = (Button(text='<', size_hint=(.14, 1), pos_hint={'x':0, 'y':0}))
+            self.next_button = (Button(text='>', size_hint=(.14, 1), pos_hint={'x':0.86, 'y':0}))
+            self.perv_button.bind(on_press=partial(self.switch_next_screen, kb_id-1, transition='right'))
+            self.next_button.bind(on_press=partial(self.switch_next_screen, kb_id+1, transition='left'))
+            self.add_widget(self.perv_button)
+            self.add_widget(self.next_button)
             # self.layout_settings_button = Button(text='Settings')
             # self.add_widget(self.layout_settings_button)
 
-        def button_press_event(self, name, _):
+        def switch_next_screen(self, screen_id: int, _, transition: str):
+            MainApp.sm.transition.direction = transition
+            if screen_id > KbSelection.max_screen_counter or screen_id < 0:
+                print('Screen not found')
+            else:
+                KbSelection.last_used_page = 'layoutScreen'+str(screen_id)
+                MainApp.sm.current = 'layoutScreen'+str(screen_id)
+
+        def button_press_event(self, name: str, _):
             MainApp.sm.current = name
             print(f'Kb swtiched to {name}')
 
@@ -324,7 +340,7 @@ class ConnectScreen(GridLayout, Screen):
             MainApp.sock = connect((self.connect_ip.text, int(self.connect_port.text)))
         except ValueError:
             ...     #TODO add button for run app without connection
-        MainApp.sm.current = 'KbSelection'
+        MainApp.sm.current = KbSelection.last_used_page
 
 
 class MainApp(App):
