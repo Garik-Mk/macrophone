@@ -478,6 +478,7 @@ class ConnectScreen(Screen):
     def connect_button_press_event(self, _):
         try:
             MainApp.sock = connect((self.connect_ip.text, int(self.connect_port.text)))
+            MainApp.sm.current = KbSelection.last_used_page
         except ValueError:
             print('Connection Failed')
 
