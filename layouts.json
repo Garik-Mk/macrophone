@@ -77,53 +77,6 @@
             }
         ]
     },
-    "TestLayout": {
-        "cols": 4,
-        "rows": 3,
-        "def_background_color": [
-            0.24,
-            0.2,
-            0.71,
-            1
-        ],
-        "def_text_color": [
-            0,
-            0,
-            0,
-            1
-        ],
-        "Buttons": [
-            {
-                "name": "Brush",
-                "hotkeys": "ctrl+b",
-                "text_color": [],
-                "button_color": []
-            },
-            {
-                "name": "Eraser",
-                "hotkeys": "ctrl+e",
-                "text_color": [],
-                "button_color": []
-            },
-            {
-                "name": "Test key",
-                "hotkeys": "Some",
-                "text_color": [],
-                "button_color": []
-            },
-            {
-                "name": "Test 2",
-                "hotkeys": "ctrl+c",
-                "text_color": [],
-                "button_color": [
-                    1,
-                    0.09999999999999998,
-                    0.09999999999999998,
-                    1
-                ]
-            }
-        ]
-    },
     "PhotoshopLayout": {
         "cols": 4,
         "rows": 3,
@@ -151,23 +104,6 @@
                 "hotkeys": "ctrl+e",
                 "text_color": [],
                 "button_color": []
-            },
-            {
-                "name": "Test key",
-                "hotkeys": "Some",
-                "text_color": [],
-                "button_color": []
-            },
-            {
-                "name": "Test 2",
-                "hotkeys": "ctrl+c",
-                "text_color": [],
-                "button_color": [
-                    1,
-                    0.09999999999999998,
-                    0.09999999999999998,
-                    1
-                ]
             }
         ]
     },
@@ -344,6 +280,154 @@
                     0.38750000000000007,
                     0.30000000000000004,
                     0.11904761904761922,
+                    1
+                ]
+            }
+        ]
+    },
+    "Microsoft Flight Simulator": {
+        "cols": 4,
+        "rows": 3,
+        "def_background_color": [
+            0.6,
+            1,
+            0.7,
+            1
+        ],
+        "def_text_color": [
+            0.0,
+            0.0,
+            0.0,
+            1
+        ],
+        "Buttons": [
+            {
+                "name": "Toggle Auto Ice",
+                "hotkeys": "h",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Decrease Cowl Flap",
+                "hotkeys": "ctrl+shift+c",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Increase Cowl Flap",
+                "hotkeys": "shift+ctrl+v",
+                "text_color": [],
+                "button_color": []
+            },
+            {
+                "name": "Engine Autostop",
+                "hotkeys": "ctrl+e",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    1,
+                    0.6,
+                    0.6,
+                    1
+                ]
+            },
+            {
+                "name": "Fuel Selector 1 All",
+                "hotkeys": "alt+w",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    0.95,
+                    1,
+                    0.6,
+                    1
+                ]
+            },
+            {
+                "name": "Toggle All Fuel Valves",
+                "hotkeys": "alt+v",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    0.95,
+                    1,
+                    0.6,
+                    1
+                ]
+            },
+            {
+                "name": "Toggle Autopilot Master",
+                "hotkeys": "z",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    1,
+                    0.625,
+                    0.4,
+                    1
+                ]
+            },
+            {
+                "name": "Brakes",
+                "hotkeys": "-",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    1,
+                    0.4,
+                    0.4,
+                    1
+                ]
+            },
+            {
+                "name": "Decrease Flaps",
+                "hotkeys": "f6",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    0.75,
+                    1,
+                    0.5,
+                    1
+                ]
+            },
+            {
+                "name": "Extends Flaps",
+                "hotkeys": "f8",
+                "text_color": [
+                    0.011904761904761904,
+                    0.035714285714285886,
+                    0.035714285714285886,
+                    1
+                ],
+                "button_color": [
+                    0.75,
+                    1,
+                    0.5,
                     1
                 ]
             }
