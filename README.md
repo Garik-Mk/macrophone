@@ -26,3 +26,4 @@ _Check out https://kivy.org/ for further info._
 > - [X] Add Screen addition.
 > - [X] Add settings screen in layout manager.
 > - [ ] Settings import.
+> - [ ] If manually quited, shut down server.
